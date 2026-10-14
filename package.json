@@ -1,0 +1,27 @@
+{
+  "name": "ai-fitness-adventure",
+  "version": "2.0.0",
+  "description": "AI-Powered Gamified Fitness Adventure Application with Computer Vision Exercise Recognition",
+  "scripts": {
+    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan.bold,magenta.bold\" \"npm run server\" \"npm run client\"",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan.bold,magenta.bold\" \"npm run server:dev\" \"npm run client\"",
+    "server": "npm start --prefix backend",
+    "server:dev": "npm run dev --prefix backend",
+    "client": "npm run dev --prefix frontend",
+    "test": "npm test --prefix backend",
+    "build": "npm run build --prefix frontend"
+  },
+  "keywords": [
+    "fitness",
+    "gamification",
+    "computer-vision",
+    "ai-coach",
+    "mediapipe",
+    "pose-detection"
+  ],
+  "author": "AI Fitness Adventure Engineering Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
