@@ -37,7 +37,9 @@ async function chat(req, res) {
       reply: coachResult.reply,
       provider: coachResult.provider,
       category: coachResult.category,
-      quickFollowUps: coachResult.quickFollowUps
+      quickFollowUps: coachResult.quickFollowUps,
+      exerciseCard: coachResult.exerciseCard || null,
+      triageData: coachResult.triageData || null
     });
   } catch (err) {
     console.error('AI Coach Chat error:', err);

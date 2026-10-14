@@ -4,7 +4,7 @@
       "id": "user-demo-1",
       "name": "Alex Vance",
       "email": "alex@adventure.com",
-      "passwordHash": "$2a$08$dxz6m.ftvJazvQZzGUAlvuICmpvrE.voF.KPpeWD2dVzrEvCAI6R2",
+      "passwordHash": "$2a$08$tFLjR4xBoNgg8yt0p60pOeUlDdCsSaiW4quSQyqjwA9pMHx3ueZDm",
       "role": "Adventurer",
       "avatar": "Aura Warrior",
       "avatarClass": "warrior",
@@ -41,10 +41,10 @@
       "createdAt": "2026-10-01T08:00:00.000Z"
     },
     {
-      "id": "user-1791993811512",
+      "id": "user-1791996957688",
       "name": "Elena Rostova",
-      "email": "test_1791993811014@fitness.com",
-      "passwordHash": "$2a$08$.bZA5.0z8.fwT8/6w4ZwxeMpM0Zkyssu6LRjKAooAFVLgi3AFlxKO",
+      "email": "test_1791996957623@fitness.com",
+      "passwordHash": "$2a$08$bM7yGMn0BrNAyuP67IqudeFKTQxX1j6rmJhcCC.B6FHVWy4DRWdcC",
       "role": "Adventurer",
       "avatar": "Wind Strider",
       "avatarClass": "scout",
@@ -76,12 +76,12 @@
         "cameraGuidance": true,
         "darkTheme": true
       },
-      "createdAt": "2026-10-14T16:03:31.512Z"
+      "createdAt": "2026-10-14T16:55:57.688Z"
     }
   ],
   "workouts": [
     {
-      "id": "w-1791993811688",
+      "id": "w-1791996957830",
       "userId": "user-demo-1",
       "title": "Highland Testing Trial",
       "worldId": "world-1",
@@ -92,7 +92,7 @@
       "xpEarned": 124,
       "rpe": 6,
       "difficultyFeedback": "just_right",
-      "completedAt": "2026-10-14T16:03:31.688Z",
+      "completedAt": "2026-10-14T16:55:57.830Z",
       "exercises": [
         {
           "name": "Bodyweight Squats",
@@ -566,7 +566,7 @@
       "icon": "Shield",
       "rarity": "Rare",
       "xpBonus": 120,
-      "unlockedAt": "2026-10-14T16:03:31.671Z"
+      "unlockedAt": "2026-10-14T16:55:57.821Z"
     },
     {
       "id": "ach-5",
@@ -575,7 +575,7 @@
       "icon": "Zap",
       "rarity": "Epic",
       "xpBonus": 150,
-      "unlockedAt": "2026-10-14T16:03:31.676Z"
+      "unlockedAt": "2026-10-14T16:55:57.824Z"
     },
     {
       "id": "ach-6",
@@ -620,7 +620,7 @@
       "icon": "Clock",
       "rarity": "Epic",
       "xpBonus": 200,
-      "unlockedAt": "2026-10-14T16:03:31.683Z"
+      "unlockedAt": "2026-10-14T16:55:57.826Z"
     },
     {
       "id": "ach-11",
@@ -646,7 +646,7 @@
       "userId": "user-demo-1",
       "role": "user",
       "content": "How do I maintain good squat form?",
-      "timestamp": "2026-10-14T16:03:31.619Z"
+      "timestamp": "2026-10-14T16:55:57.785Z"
     },
     {
       "userId": "user-demo-1",
@@ -654,13 +654,13 @@
       "content": "Here is the biomechanical checklist for a flawless **Bodyweight Squat**:\n\n1. **Stance**: Feet shoulder-width apart, toes flared slightly out (10-15 degrees) to allow room for your pelvis.\n2. **First Move**: Initiate by hinging your hips back slightly before bending the knees.\n3. **Depth**: Lower until hip crease is level with knee joint (parallel). Keep your chest proud and eyes forward.\n4. **Knee Alignment**: Keep your knees pushed out in line with your second toe—do not allow them to collapse inward.\n5. **Ascent**: Drive through your entire foot (tripod foot pressure) and squeeze glutes at the top.\n\n💡 *Pro Tip*: Use our **Camera Vision Mode**! It tracks your hip-knee-ankle angles in real time to verify your depth.",
       "provider": "heuristic_fallback",
       "category": "exercise_technique",
-      "timestamp": "2026-10-14T16:03:31.622Z"
+      "timestamp": "2026-10-14T16:55:57.790Z"
     },
     {
       "userId": "user-demo-1",
       "role": "user",
       "content": "I feel sharp knee pain when bending down",
-      "timestamp": "2026-10-14T16:03:31.648Z"
+      "timestamp": "2026-10-14T16:55:57.800Z"
     },
     {
       "userId": "user-demo-1",
@@ -668,7 +668,7 @@
       "content": "⚠️ **Safety First Adventurer!** \n\nIf you are experiencing sharp pain, swelling, dizziness, or joint discomfort, **please stop exercising immediately**. \n\n- **Do NOT push through pain**: Genuine joint or tendon pain is a signal from your nervous system to rest and protect the joint.\n- **R.I.C.E Principle**: Rest, Ice (if acute swelling), Compression, and Elevation.\n- **Non-Medical Disclaimer**: I am an AI fitness coach, not a medical doctor or licensed physical therapist. If pain persists beyond 24-48 hours or radiates, please consult a qualified healthcare professional.\n\nWould you like to switch to a gentle **Parasympathetic Breathing Flow** or take a safe **Active Recovery Rest Day**? Rest days preserve your adventure streak!",
       "provider": "safety_guardrail",
       "category": "safety_advisory",
-      "timestamp": "2026-10-14T16:03:31.652Z"
+      "timestamp": "2026-10-14T16:55:57.803Z"
     }
   ]
 }

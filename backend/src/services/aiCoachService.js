@@ -28,11 +28,13 @@ async function getCoachResponse(message, userContext = {}) {
     try {
       const geminiResponse = await callGeminiAPI(message, userContext);
       if (geminiResponse) {
+        const detectedExerciseCard = detectExerciseCard(normalizedMsg);
         return {
           reply: geminiResponse,
           provider: 'gemini',
-          category: 'ai_generated',
-          quickFollowUps: generateQuickFollowUps(normalizedMsg)
+          category: detectedExerciseCard ? 'exercise_technique' : 'ai_generated',
+          quickFollowUps: generateQuickFollowUps(normalizedMsg),
+          exerciseCard: detectedExerciseCard
         };
       }
     } catch (err) {
@@ -51,7 +53,9 @@ async function getCoachResponse(message, userContext = {}) {
       'Suggest an easier exercise',
       'How to recover faster?',
       'Recommend a 15-min quest'
-    ]
+    ],
+    exerciseCard: heuristic.exerciseCard || null,
+    triageData: heuristic.triageData || null
   };
 }
 
@@ -80,8 +84,103 @@ Would you like to switch to a gentle **Parasympathetic Breathing Flow** or take 
       'Log an Active Recovery Rest Day',
       'Show gentle breathing exercises',
       'When is it safe to resume?'
-    ]
+    ],
+    triageData: {
+      severity: 'high',
+      isEmergency: false,
+      recommendedAction: 'Immediate cessation of mechanical joint loading',
+      domsVsSharp: {
+        doms: 'Dull, diffuse muscular ache peaking 24-48 hours post-workout across muscle bellies (normal adaptive hypertrophy response).',
+        sharp: 'Stabbing sensations, localized joint popping, shooting pain, or rapid swelling (abnormal, stop immediately).'
+      },
+      riceProtocol: [
+        'Rest: Discontinue training the affected joint or limb immediately.',
+        'Ice: Apply cold compress for 15-20 mins if acute inflammation or swelling occurs.',
+        'Compress: Gentle elastic wrap to support without restricting blood flow.',
+        'Elevate: Keep the limb elevated above heart level when resting.'
+      ],
+      safeRecoveryAction: 'Active Recovery & Parasympathetic Mobility'
+    }
   };
+}
+
+function detectExerciseCard(text) {
+  if (text.includes('squat') || text.includes('leg form')) {
+    return {
+      exerciseId: 'squat',
+      exerciseName: 'Bodyweight Squats',
+      targetJoint: 'Knee Joint (Patellofemoral & Tibiofemoral)',
+      targetAngle: '≤ 95° (Parallel Depth)',
+      primaryMuscles: ['Quadriceps', 'Gluteus Maximus', 'Core Stabilizers'],
+      concentricCue: 'Drive aggressively through your midfoot, extend hips, and squeeze glutes at top lockout.',
+      eccentricCue: 'Hinge hips back first, push knees outward in line with second toe, keep chest proud.',
+      commonFault: 'Knees caving inward (valgus collapse) or heels lifting off the floor.',
+      recommendedReps: 15,
+      cvTrackerReady: true
+    };
+  }
+
+  if (text.includes('pushup') || text.includes('push-up') || text.includes('chest')) {
+    return {
+      exerciseId: 'pushup',
+      exerciseName: 'Standard Pushups',
+      targetJoint: 'Elbow Joint (Humeroulnar)',
+      targetAngle: '≤ 90° (Chest 2 Inches from Floor)',
+      primaryMuscles: ['Pectoralis Major', 'Triceps Brachii', 'Anterior Deltoids', 'Rectus Abdominis'],
+      concentricCue: 'Press the floor away with maximum intent; protract shoulder blades at the top.',
+      eccentricCue: 'Tuck elbows at a 45° arrow angle relative to torso; avoid 90° shoulder flaring.',
+      commonFault: 'Sagging lower back (lumbar hyperextension) or incomplete chest lockout.',
+      recommendedReps: 12,
+      cvTrackerReady: true
+    };
+  }
+
+  if (text.includes('jumping jack') || text.includes('jack') || text.includes('cardio')) {
+    return {
+      exerciseId: 'jumping_jack',
+      exerciseName: 'Jumping Jacks',
+      targetJoint: 'Shoulder Abduction & Stance Width',
+      targetAngle: '≥ 135° (Overhead Abduction)',
+      primaryMuscles: ['Calves (Gastrocnemius)', 'Deltoids', 'Cardiovascular Engine'],
+      concentricCue: 'Spring dynamically, landing softly on the balls of your feet with knees slightly bent.',
+      eccentricCue: 'Sync arm swing with foot rebound; maintain rhythmic continuous breathing.',
+      commonFault: 'Stiff-legged landing causing unnecessary knee impact.',
+      recommendedReps: 25,
+      cvTrackerReady: true
+    };
+  }
+
+  if (text.includes('curl') || text.includes('bicep') || text.includes('arm')) {
+    return {
+      exerciseId: 'bicep_curl',
+      exerciseName: 'Bicep Curls',
+      targetJoint: 'Elbow Flexion',
+      targetAngle: '≤ 50° (Peak Contraction)',
+      primaryMuscles: ['Biceps Brachii', 'Brachialis', 'Brachioradialis'],
+      concentricCue: 'Pin elbows to ribs and rotate wrists upward to maximize bicep contraction.',
+      eccentricCue: 'Lower under strict 2-3 second cadence to maximize eccentric tension.',
+      commonFault: 'Swinging torso or using lower back momentum to cheat the curl.',
+      recommendedReps: 12,
+      cvTrackerReady: true
+    };
+  }
+
+  if (text.includes('plank') || text.includes('core')) {
+    return {
+      exerciseId: 'plank',
+      exerciseName: 'Isometric Plank',
+      targetJoint: 'Spine & Pelvic Collinearity',
+      targetAngle: '180° (± 15° Straight Line)',
+      primaryMuscles: ['Transverse Abdominis', 'Rectus Abdominis', 'Gluteals'],
+      concentricCue: 'Pull belly button toward spine and squeeze glutes into posterior pelvic tilt.',
+      eccentricCue: 'Maintain level shoulders and hips parallel to the floor; breathe steadily.',
+      commonFault: 'Hips drooping toward floor or piking up in a high triangle.',
+      recommendedReps: 45,
+      cvTrackerReady: true
+    };
+  }
+
+  return null;
 }
 
 function generateHeuristicResponse(text, user = {}) {
@@ -109,6 +208,7 @@ In our adventure, taking a dedicated rest day gives you **Recovery XP** and keep
   if (text.includes('squat') || text.includes('leg form') || text.includes('knees')) {
     return {
       category: 'exercise_technique',
+      exerciseCard: detectExerciseCard('squat'),
       text: `Here is the biomechanical checklist for a flawless **Bodyweight Squat**:
 
 1. **Stance**: Feet shoulder-width apart, toes flared slightly out (10-15 degrees) to allow room for your pelvis.
@@ -126,6 +226,7 @@ In our adventure, taking a dedicated rest day gives you **Recovery XP** and keep
   if (text.includes('pushup') || text.includes('push-up') || text.includes('chest')) {
     return {
       category: 'exercise_technique',
+      exerciseCard: detectExerciseCard('pushup'),
       text: `Here are the gold-standard cues for **Pushups**:
 
 1. **Hand Placement**: Slightly wider than shoulders, fingers slightly turned out.
@@ -223,13 +324,12 @@ How can I help you excel today?
 }
 
 function generateQuickFollowUps(msg) {
-  if (msg.includes('squat')) return ['Pushup form tips', 'Easier squat regression', 'Start camera workout'];
+  if (msg.includes('squat')) return ['Pushup form tips', 'Easier squat regression', 'Launch Camera Squat Tracker'];
   if (msg.includes('pushup')) return ['Diamond pushups', 'Knee pushup tips', 'Check plank form'];
   return ['Help with exercise form', 'Recommend a quest', 'How to recover faster?', 'Active recovery rest'];
 }
 
 async function callGeminiAPI(message, userContext) {
-  // Built-in fetch for Node 18+
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
   
   const payload = {

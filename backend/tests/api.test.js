@@ -161,6 +161,8 @@ test('8. AI Coach provides technique cues and triggers safety protocol on pain r
   const chatData = await chatRes.json();
   assert.equal(chatData.success, true);
   assert.ok(chatData.reply.toLowerCase().includes('squat'));
+  assert.ok(chatData.exerciseCard, 'Should return exerciseCard for squat technique query');
+  assert.equal(chatData.exerciseCard.exerciseId, 'squat');
 
   // Safety trigger: Pain report
   const painRes = await fetch(`${baseUrl}/api/ai-coach/chat`, {
@@ -176,6 +178,8 @@ test('8. AI Coach provides technique cues and triggers safety protocol on pain r
   assert.equal(painData.category, 'safety_advisory');
   assert.ok(painData.reply.includes('Safety First'));
   assert.ok(painData.reply.includes('stop exercising immediately'));
+  assert.ok(painData.triageData, 'Should return structured triageData for pain report');
+  assert.ok(painData.triageData.riceProtocol.length > 0);
 });
 
 test('9. Workout Logging calculates XP, awards streak, and updates stats', async () => {

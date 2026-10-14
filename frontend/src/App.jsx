@@ -83,7 +83,10 @@ export default function App() {
           )}
 
           {activeTab === 'coach' && (
-            <AICoachChat />
+            <AICoachChat
+              setActiveTab={setActiveTab}
+              onStartWorkout={handleStartWorkout}
+            />
           )}
 
           {activeTab === 'achievements' && (
