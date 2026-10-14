@@ -2,7 +2,20 @@
  * Central API Client for AI Fitness Adventure
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (!isLocal) {
+      return 'https://fitness-check.onrender.com/api';
+    }
+  }
+  return '/api';
+};
+
+const BASE_URL = getBaseUrl();
 
 function getToken() {
   return localStorage.getItem('fitness_token');

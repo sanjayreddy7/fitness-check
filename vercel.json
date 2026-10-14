@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:match*",
+      "destination": "https://fitness-check.onrender.com/api/:match*"
+    }
+  ]
+}
