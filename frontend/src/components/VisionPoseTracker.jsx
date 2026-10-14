@@ -15,7 +15,8 @@ import {
   Flame,
   Award,
   Activity,
-  Sparkles
+  Sparkles,
+  ChevronRight
 } from 'lucide-react';
 import {
   calculateAngle,
@@ -28,7 +29,7 @@ import {
 import { soundEngine, voiceCoach } from '../services/audioService';
 
 export default function VisionPoseTracker({
-  exerciseType = 'squat', // 'squat', 'pushup', 'jumping_jack', 'bicep_curl', 'plank'
+  exerciseType = 'squat', // 'squat', 'pushup', 'lunge', 'jumping_jack', 'bicep_curl', 'plank'
   targetReps = 15,
   onRepCount = () => {},
   onComplete = () => {}
@@ -41,6 +42,7 @@ export default function VisionPoseTracker({
   const animationFrameRef = useRef(null);
 
   // Core tracking states
+  const [currentExercise, setCurrentExercise] = useState(exerciseType);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState(null);
   const [currentReps, setCurrentReps] = useState(0);
@@ -48,8 +50,9 @@ export default function VisionPoseTracker({
   const [isFormGood, setIsFormGood] = useState(true);
   const [jointAngle, setJointAngle] = useState(null);
   const [stage, setStage] = useState('up'); // 'up' or 'down'
-  const [formAccuracy, setFormAccuracy] = useState(92);
-  const [averageFormAccuracy, setAverageFormAccuracy] = useState(92);
+  const [formAccuracy, setFormAccuracy] = useState(94);
+  const [averageFormAccuracy, setAverageFormAccuracy] = useState(94);
+  const [repHistory, setRepHistory] = useState([]);
 
   // HUD & calibration states
   const [calibration, setCalibration] = useState({ isCalibrated: false, visiblePercent: 0, feedbackMessage: '' });
@@ -60,22 +63,32 @@ export default function VisionPoseTracker({
   const [fps, setFps] = useState(30);
 
   // Kinematics details for current exercise
-  const kinematicsConfig = EXERCISE_KINEMATICS[exerciseType] || EXERCISE_KINEMATICS.squat;
+  const kinematicsConfig = EXERCISE_KINEMATICS[currentExercise] || EXERCISE_KINEMATICS.squat;
 
   // Tracker state ref to avoid stale closures inside animation/callback loops
   const trackerState = useRef({
     stage: 'up',
     reps: 0,
     lastRepTimestamp: 0,
-    exerciseType,
+    exerciseType: currentExercise,
     repScores: [],
     frameCount: 0,
     lastFpsTimestamp: Date.now()
   });
 
   useEffect(() => {
+    setCurrentExercise(exerciseType);
     trackerState.current.exerciseType = exerciseType;
   }, [exerciseType]);
+
+  const handleSwitchMovement = (newEx) => {
+    setCurrentExercise(newEx);
+    trackerState.current.exerciseType = newEx;
+    trackerState.current.stage = 'up';
+    setStage('up');
+    const newConfig = EXERCISE_KINEMATICS[newEx] || EXERCISE_KINEMATICS.squat;
+    voiceCoach.speak(`Switched tracking to ${newConfig.name}`, { force: true });
+  };
 
   // Handle Fullscreen Toggle
   const toggleFullscreen = () => {
@@ -249,7 +262,7 @@ export default function VisionPoseTracker({
         setFormAccuracy(currentScore);
         setCalibration({ isCalibrated: true, visiblePercent: 95, feedbackMessage: 'Simulation Active' });
 
-        if (trackerState.current.exerciseType === 'squat') {
+        if (trackerState.current.exerciseType === 'squat' || trackerState.current.exerciseType === 'lunge') {
           if (simulatedAngle < 95 && trackerState.current.stage === 'up') {
             trackerState.current.stage = 'down';
             setStage('down');
@@ -295,7 +308,6 @@ export default function VisionPoseTracker({
         setFormAccuracy(score);
 
         if (angle <= 95) {
-          // Bottom reached
           if (trackerState.current.stage === 'up') {
             trackerState.current.stage = 'down';
             setStage('down');
@@ -304,19 +316,50 @@ export default function VisionPoseTracker({
           feedback = '🔥 Parallel depth reached! Now drive up firmly.';
           isGood = true;
         } else if (angle >= 160) {
-          // Top lockout
           if (trackerState.current.stage === 'down' && (now - trackerState.current.lastRepTimestamp > 600)) {
             triggerRepSuccess(score);
           } else {
             feedback = 'Ready! Lower your hips below knees to start repetition.';
           }
         } else {
-          // In transition
           feedback = trackerState.current.stage === 'down' ? 'Push up through midfoot!' : 'Lowering... keep chest tall!';
         }
       }
+    } else if (ex === 'lunge') {
+      const leftVis = (lm[23]?.visibility || 0) + (lm[25]?.visibility || 0) + (lm[27]?.visibility || 0);
+      const rightVis = (lm[24]?.visibility || 0) + (lm[26]?.visibility || 0) + (lm[28]?.visibility || 0);
+
+      const hip = leftVis > rightVis ? lm[23] : lm[24];
+      const knee = leftVis > rightVis ? lm[25] : lm[26];
+      const ankle = leftVis > rightVis ? lm[27] : lm[28];
+
+      angle = calculateAngle(hip, knee, ankle);
+      setJointAngle(angle);
+      primaryJointCoords = knee;
+
+      if (angle) {
+        const score = calculateFormAccuracy('lunge', angle, lm);
+        setFormAccuracy(score);
+
+        if (angle <= 95) {
+          if (trackerState.current.stage === 'up') {
+            trackerState.current.stage = 'down';
+            setStage('down');
+            voiceCoach.speakFormCue('Deep 90-degree lunge! Drive back through lead heel!');
+          }
+          feedback = '🔥 90° Lunge depth achieved! Push back to start.';
+          isGood = true;
+        } else if (angle >= 160) {
+          if (trackerState.current.stage === 'down' && (now - trackerState.current.lastRepTimestamp > 600)) {
+            triggerRepSuccess(score);
+          } else {
+            feedback = 'Ready! Step forward into 90-degree lunge.';
+          }
+        } else {
+          feedback = trackerState.current.stage === 'down' ? 'Drive through front heel!' : 'Lowering back knee...';
+        }
+      }
     } else if (ex === 'pushup') {
-      // Elbow angle: Shoulder (11/12) -> Elbow (13/14) -> Wrist (15/16)
       const leftVis = (lm[11]?.visibility || 0) + (lm[13]?.visibility || 0) + (lm[15]?.visibility || 0);
       const rightVis = (lm[12]?.visibility || 0) + (lm[14]?.visibility || 0) + (lm[16]?.visibility || 0);
 
@@ -434,8 +477,8 @@ export default function VisionPoseTracker({
     setFormFeedback(feedback || 'Tracking movement...');
     setIsFormGood(isGood);
 
-    // Draw Skeleton & Highlight Joint
-    drawSkeleton(ctx, lm, width, height, isGood, primaryJointCoords);
+    // Draw Skeleton & Highlight Joint with direct on-canvas degree tag
+    drawSkeleton(ctx, lm, width, height, isGood, primaryJointCoords, angle);
   };
 
   const triggerRepSuccess = (repScore = 90) => {
@@ -447,6 +490,9 @@ export default function VisionPoseTracker({
     const newCount = trackerState.current.reps;
     setCurrentReps(newCount);
     setStage('up');
+
+    // Update rep breakdown history
+    setRepHistory(prev => [{ rep: newCount, score: repScore }, ...prev.slice(0, 4)]);
 
     // Calculate running average form score
     const avgScore = Math.round(
@@ -465,7 +511,7 @@ export default function VisionPoseTracker({
       rep: newCount,
       xp: 15,
       score: repScore,
-      left: Math.floor(35 + Math.random() * 30) // random offset
+      left: Math.floor(35 + Math.random() * 30)
     };
 
     setFloatingBadges(prev => [...prev, newBadge]);
@@ -489,10 +535,10 @@ export default function VisionPoseTracker({
   // Target angle gauge metrics
   const targetThreshold = kinematicsConfig.targetThreshold;
   const isTargetAchieved = jointAngle !== null && (
-    exerciseType === 'squat' ? jointAngle <= targetThreshold :
-    exerciseType === 'pushup' ? jointAngle <= targetThreshold :
-    exerciseType === 'jumping_jack' ? jointAngle >= targetThreshold :
-    exerciseType === 'bicep_curl' ? jointAngle <= targetThreshold :
+    currentExercise === 'squat' || currentExercise === 'lunge' ? jointAngle <= targetThreshold :
+    currentExercise === 'pushup' ? jointAngle <= targetThreshold :
+    currentExercise === 'jumping_jack' ? jointAngle >= targetThreshold :
+    currentExercise === 'bicep_curl' ? jointAngle <= targetThreshold :
     Math.abs(jointAngle - 180) <= 15
   );
 
@@ -504,7 +550,7 @@ export default function VisionPoseTracker({
       }`}
     >
       {/* Header & Controls HUD */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
         <div>
           <div className="flex items-center gap-2">
             <span className="flex h-3 w-3 relative">
@@ -519,7 +565,7 @@ export default function VisionPoseTracker({
               </span>
             </h3>
           </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
+          <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
             <span>Tracking: {kinematicsConfig.targetJoint}</span>
             <span>•</span>
             <span>Target: &le; {kinematicsConfig.targetThreshold}°</span>
@@ -588,6 +634,31 @@ export default function VisionPoseTracker({
         </div>
       </div>
 
+      {/* In-Tracker Movement Quick-Switch Bar */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none mb-2 text-xs">
+        <span className="text-[10px] uppercase font-bold text-slate-400 shrink-0">Drill:</span>
+        {[
+          { id: 'squat', label: 'Squats' },
+          { id: 'pushup', label: 'Pushups' },
+          { id: 'lunge', label: 'Lunges' },
+          { id: 'jumping_jack', label: 'Jacks' },
+          { id: 'bicep_curl', label: 'Curls' },
+          { id: 'plank', label: 'Plank' }
+        ].map(item => (
+          <button
+            key={item.id}
+            onClick={() => handleSwitchMovement(item.id)}
+            className={`px-3 py-1 rounded-xl font-bold transition-all shrink-0 ${
+              currentExercise === item.id
+                ? 'bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-md'
+                : 'bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800'
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
       {/* Video & Canvas Viewport */}
       <div className={`relative aspect-video w-full bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center ${isFullscreen ? 'flex-1' : ''}`}>
         {isCameraActive ? (
@@ -624,7 +695,7 @@ export default function VisionPoseTracker({
         )}
 
         {/* Top-Left HUD: Rep Counters & Joint Angle */}
-        <div className="absolute top-4 left-4 z-20 flex flex-col gap-2.5 pointer-events-none">
+        <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 pointer-events-none">
           <div className="bg-slate-950/85 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10 shadow-2xl">
             <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Target Repetitions</span>
             <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400 font-mono">
@@ -678,6 +749,13 @@ export default function VisionPoseTracker({
               </div>
             </div>
           )}
+
+          {/* Cadence Pacing Indicator */}
+          <div className="bg-slate-950/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-[10px] flex items-center gap-2 shadow">
+            <span className="text-slate-400 uppercase font-bold">Cadence:</span>
+            <span className="text-cyan-300 font-mono font-bold">2s Down • 1s Up</span>
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+          </div>
         </div>
 
         {/* Top-Right HUD: Real-time Form Accuracy Bar & Calibration */}
@@ -719,6 +797,24 @@ export default function VisionPoseTracker({
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               )}
               <span>{calibration.feedbackMessage || 'Landmarks Locked'}</span>
+            </div>
+          )}
+
+          {/* Rep Breakdown Pills (Recent Reps) */}
+          {repHistory.length > 0 && (
+            <div className="flex items-center gap-1">
+              {repHistory.map((r, i) => (
+                <span
+                  key={i}
+                  className={`text-[9px] font-mono px-1.5 py-0.5 rounded-lg border backdrop-blur-md ${
+                    r.score >= 90
+                      ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300'
+                      : 'bg-amber-950/80 border-amber-500/40 text-amber-300'
+                  }`}
+                >
+                  #{r.rep}: {r.score}%
+                </span>
+              ))}
             </div>
           )}
         </div>
@@ -777,7 +873,7 @@ export default function VisionPoseTracker({
       <div className="mt-4 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-xs text-slate-400">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>100% On-Device Computer Vision. Zero video data is stored or transmitted.</span>
+          <span>100% On-Device Computer Vision. Zero video data leaves your browser.</span>
         </div>
 
         <div className="flex items-center gap-2">

@@ -40,6 +40,21 @@ export const EXERCISE_KINEMATICS = {
       lockout: 'Top lockout! Full protraction achieved.'
     }
   },
+  lunge: {
+    id: 'lunge',
+    name: 'Forward Lunges',
+    targetJoint: 'Lead Knee Flexion',
+    targetThreshold: 95,
+    lockoutThreshold: 160,
+    idealDepthRange: [85, 95],
+    criticalLandmarks: [23, 24, 25, 26, 27, 28],
+    cues: {
+      descent: 'Step forward, drop back knee toward floor!',
+      depth: '90-degree front knee! Drive back through lead heel!',
+      ascent: 'Push back explosively to standing posture!',
+      lockout: 'Full extension upright reset.'
+    }
+  },
   jumping_jack: {
     id: 'jumping_jack',
     name: 'Jumping Jacks',
@@ -151,16 +166,14 @@ export function checkLandmarkVisibility(landmarks, exerciseType = 'squat') {
 export function calculateFormAccuracy(exerciseType, angle, landmarks) {
   if (!angle || !landmarks) return 85;
 
-  if (exerciseType === 'squat') {
-    // Check depth
+  if (exerciseType === 'squat' || exerciseType === 'lunge') {
     if (angle <= 95) {
-      // Perfect depth
       const depthScore = Math.max(85, 100 - Math.abs(angle - 85) * 1.2);
       return Math.round(Math.min(100, depthScore));
     } else if (angle <= 110) {
-      return 78; // Partial depth
+      return 78;
     } else {
-      return 60; // High hips
+      return 60;
     }
   }
 
@@ -213,7 +226,7 @@ export const POSE_CONNECTIONS = [
 /**
  * Draws real-time skeletal landmarks and connected bone vectors onto canvas with glowing HUD aesthetics
  */
-export function drawSkeleton(ctx, landmarks, width, height, isFormGood = true, activeJointCoords = null) {
+export function drawSkeleton(ctx, landmarks, width, height, isFormGood = true, activeJointCoords = null, activeAngle = null) {
   if (!landmarks || landmarks.length === 0) return;
 
   const lineColor = isFormGood ? '#10b981' : '#f59e0b'; // Emerald if good, Amber if adjusting
@@ -266,7 +279,7 @@ export function drawSkeleton(ctx, landmarks, width, height, isFormGood = true, a
     }
   }
 
-  // 3. Highlight Active Primary Tracking Joint (if provided)
+  // 3. Highlight Active Primary Tracking Joint & Degree Tag
   if (activeJointCoords && activeJointCoords.x && activeJointCoords.y) {
     const jx = activeJointCoords.x * width;
     const jy = activeJointCoords.y * height;
@@ -282,6 +295,32 @@ export function drawSkeleton(ctx, landmarks, width, height, isFormGood = true, a
     ctx.beginPath();
     ctx.arc(jx, jy, 8, 0, 2 * Math.PI);
     ctx.fill();
+
+    // Floating angle indicator tag directly on the joint
+    if (activeAngle !== null && activeAngle !== undefined) {
+      ctx.save();
+      const tagText = `${activeAngle}°`;
+      ctx.font = 'bold 12px monospace';
+      const textWidth = ctx.measureText(tagText).width;
+      const tagX = Math.min(width - 50, Math.max(10, jx + 20));
+      const tagY = Math.min(height - 20, Math.max(25, jy - 8));
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.strokeStyle = isFormGood ? '#10b981' : '#f59e0b';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(tagX - 5, tagY - 13, textWidth + 10, 18, 5);
+      } else {
+        ctx.rect(tagX - 5, tagY - 13, textWidth + 10, 18);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = isFormGood ? '#34d399' : '#fbbf24';
+      ctx.fillText(tagText, tagX, tagY);
+      ctx.restore();
+    }
   }
 
   ctx.restore();

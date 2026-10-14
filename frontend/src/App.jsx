@@ -14,12 +14,13 @@ import ProfileSettings from './pages/ProfileSettings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AuthModal from './pages/AuthModal';
+import { Sparkles } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 
 export default function App() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('login');
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [currentSessionConfig, setCurrentSessionConfig] = useState({
     exercise: 'squat',
@@ -27,6 +28,21 @@ export default function App() {
     reps: 15,
     title: 'Highland Squat Trial'
   });
+
+  // Guard routes: if not logged in, route to login; if logged in and on login/register, route to dashboard
+  React.useEffect(() => {
+    if (!isLoading) {
+      if (isAuthenticated) {
+        if (activeTab === 'login' || activeTab === 'register') {
+          setActiveTab('dashboard');
+        }
+      } else {
+        if (activeTab !== 'login' && activeTab !== 'register' && activeTab !== 'docs') {
+          setActiveTab('login');
+        }
+      }
+    }
+  }, [isAuthenticated, isLoading, activeTab]);
 
   const handleStartWorkout = (config) => {
     setCurrentSessionConfig({
@@ -40,6 +56,24 @@ export default function App() {
     });
     setActiveTab('workout');
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#090d16] text-white flex items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-cyan-400 p-1 shadow-2xl shadow-purple-600/40 animate-pulse">
+            <div className="w-full h-full bg-[#090d16] rounded-[20px] flex items-center justify-center">
+              <Sparkles className="w-8 h-8 text-cyan-400 animate-spin" />
+            </div>
+          </div>
+          <div className="text-center">
+            <h2 className="text-lg font-black tracking-wider uppercase text-white">Fitness Adventure</h2>
+            <p className="text-xs text-slate-400 font-mono mt-1">Initializing AI & CV Engine...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col justify-between selection:bg-purple-600 selection:text-white">

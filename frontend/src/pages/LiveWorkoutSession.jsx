@@ -246,8 +246,10 @@ export default function LiveWorkoutSession({ sessionConfig = {}, onCompleteSessi
                 {[
                   { id: 'squat', name: 'Bodyweight Squats' },
                   { id: 'pushup', name: 'Standard Pushups' },
+                  { id: 'lunge', name: 'Forward Lunges' },
                   { id: 'jumping_jack', name: 'Jumping Jacks' },
-                  { id: 'bicep_curl', name: 'Bicep Curls' }
+                  { id: 'bicep_curl', name: 'Bicep Curls' },
+                  { id: 'plank', name: 'Isometric Plank' }
                 ].map(item => (
                   <button
                     key={item.id}

@@ -21,11 +21,155 @@ import {
   RotateCcw,
   CheckCircle2,
   AlertTriangle,
-  Info
+  Info,
+  ArrowRight
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { voiceCoach } from '../services/audioService';
+
+/**
+ * Visual Biomechanical Kinematic Diagram Component
+ * Renders an animated SVG biomechanical skeleton showing exact joint target angles.
+ */
+function BiomechanicalKinematicDiagram({ exerciseId = 'squat' }) {
+  if (exerciseId === 'squat') {
+    return (
+      <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800 flex items-center justify-between gap-3">
+        <svg viewBox="0 0 160 110" className="w-36 h-24 shrink-0">
+          {/* Ground Floor */}
+          <line x1="10" y1="95" x2="150" y2="95" stroke="#334155" strokeWidth="2" strokeDasharray="3 3" />
+          
+          {/* Spine & Torso (inclined 45deg) */}
+          <line x1="60" y1="25" x2="72" y2="55" stroke="#a855f7" strokeWidth="3.5" strokeLinecap="round" />
+          {/* Head */}
+          <circle cx="56" cy="18" r="7" fill="#c084fc" />
+
+          {/* Thigh (Femur) parallel to floor */}
+          <line x1="72" y1="55" x2="110" y2="58" stroke="#10b981" strokeWidth="4" strokeLinecap="round" />
+          
+          {/* Shin (Tibia) */}
+          <line x1="110" y1="58" x2="105" y2="95" stroke="#06b6d4" strokeWidth="4" strokeLinecap="round" />
+          {/* Foot */}
+          <line x1="105" y1="95" x2="120" y2="95" stroke="#06b6d4" strokeWidth="3.5" strokeLinecap="round" />
+
+          {/* Angle Arc at Knee */}
+          <path d="M 100 58 A 12 12 0 0 1 106 72" fill="none" stroke="#34d399" strokeWidth="2.5" />
+
+          {/* Glowing Joint Nodes */}
+          <circle cx="60" cy="25" r="3.5" fill="#ffffff" stroke="#a855f7" strokeWidth="2" /> {/* Shoulder */}
+          <circle cx="72" cy="55" r="4.5" fill="#ffffff" stroke="#c084fc" strokeWidth="2" /> {/* Hip */}
+          <circle cx="110" cy="58" r="5" fill="#34d399" stroke="#ffffff" strokeWidth="2" className="animate-ping opacity-75" /> {/* Knee */}
+          <circle cx="110" cy="58" r="4.5" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
+          <circle cx="105" cy="95" r="4" fill="#ffffff" stroke="#06b6d4" strokeWidth="2" /> {/* Ankle */}
+
+          {/* Text Labels */}
+          <text x="85" y="48" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="monospace">90° DEPTH</text>
+        </svg>
+
+        <div className="text-[11px] space-y-1">
+          <div className="text-emerald-400 font-bold font-mono text-xs">Parallel Squat Standard</div>
+          <div className="text-slate-300">• Hip crease level with knee joint</div>
+          <div className="text-slate-300">• Knee flexion angle: 90° - 95°</div>
+          <div className="text-slate-300">• Tripod foot pressure balanced</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (exerciseId === 'pushup') {
+    return (
+      <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800 flex items-center justify-between gap-3">
+        <svg viewBox="0 0 160 110" className="w-36 h-24 shrink-0">
+          {/* Ground */}
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#334155" strokeWidth="2" strokeDasharray="3 3" />
+
+          {/* Rigid Body Line (Heels to Shoulders) */}
+          <line x1="25" y1="84" x2="115" y2="48" stroke="#a855f7" strokeWidth="3.5" strokeLinecap="round" />
+          {/* Head */}
+          <circle cx="125" cy="44" r="6.5" fill="#c084fc" />
+
+          {/* Upper Arm & Forearm at 90 deg */}
+          <line x1="115" y1="48" x2="128" y2="68" stroke="#10b981" strokeWidth="3.5" strokeLinecap="round" />
+          <line x1="128" y1="68" x2="118" y2="88" stroke="#06b6d4" strokeWidth="3.5" strokeLinecap="round" />
+
+          {/* Elbow Angle Arc */}
+          <path d="M 122 60 A 10 10 0 0 1 124 76" fill="none" stroke="#34d399" strokeWidth="2.5" />
+
+          {/* Joints */}
+          <circle cx="25" cy="84" r="3.5" fill="#ffffff" stroke="#06b6d4" strokeWidth="2" /> {/* Ankle */}
+          <circle cx="70" cy="66" r="3.5" fill="#ffffff" stroke="#c084fc" strokeWidth="2" /> {/* Hip */}
+          <circle cx="115" cy="48" r="4" fill="#ffffff" stroke="#a855f7" strokeWidth="2" /> {/* Shoulder */}
+          <circle cx="128" cy="68" r="4.5" fill="#10b981" stroke="#ffffff" strokeWidth="2" /> {/* Elbow */}
+          <circle cx="118" cy="88" r="3.5" fill="#ffffff" stroke="#06b6d4" strokeWidth="2" /> {/* Wrist */}
+
+          <text x="75" y="38" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="monospace">90° ELBOW</text>
+        </svg>
+
+        <div className="text-[11px] space-y-1">
+          <div className="text-emerald-400 font-bold font-mono text-xs">Pushup Arrow Geometry</div>
+          <div className="text-slate-300">• Elbow path: 45° to torso</div>
+          <div className="text-slate-300">• Chest 2 inches from floor</div>
+          <div className="text-slate-300">• Zero lumbar hyperextension</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (exerciseId === 'lunge') {
+    return (
+      <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800 flex items-center justify-between gap-3">
+        <svg viewBox="0 0 160 110" className="w-36 h-24 shrink-0">
+          <line x1="10" y1="95" x2="150" y2="95" stroke="#334155" strokeWidth="2" strokeDasharray="3 3" />
+
+          {/* Upright Torso */}
+          <line x1="75" y1="28" x2="75" y2="60" stroke="#a855f7" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="75" cy="20" r="6.5" fill="#c084fc" />
+
+          {/* Lead Leg (90 deg) */}
+          <line x1="75" y1="60" x2="108" y2="62" stroke="#10b981" strokeWidth="3.5" strokeLinecap="round" />
+          <line x1="108" y1="62" x2="108" y2="95" stroke="#06b6d4" strokeWidth="3.5" strokeLinecap="round" />
+
+          {/* Rear Leg (90 deg hover) */}
+          <line x1="75" y1="60" x2="48" y2="82" stroke="#a855f7" strokeWidth="3" strokeLinecap="round" />
+          <line x1="48" y1="82" x2="48" y2="92" stroke="#64748b" strokeWidth="3" strokeLinecap="round" />
+
+          <circle cx="108" cy="62" r="4.5" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
+          <circle cx="48" cy="82" r="3.5" fill="#c084fc" stroke="#ffffff" strokeWidth="2" />
+
+          <text x="82" y="52" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="monospace">90° FRONT</text>
+        </svg>
+
+        <div className="text-[11px] space-y-1">
+          <div className="text-emerald-400 font-bold font-mono text-xs">Dual 90° Lunge Stance</div>
+          <div className="text-slate-300">• Front knee stacked over midfoot</div>
+          <div className="text-slate-300">• Rear knee 2 inches off deck</div>
+          <div className="text-slate-300">• Drive through front heel</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Generic / Plank / Jumping Jack default
+  return (
+    <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800 flex items-center justify-between gap-3">
+      <svg viewBox="0 0 160 110" className="w-36 h-24 shrink-0">
+        <line x1="10" y1="88" x2="150" y2="88" stroke="#334155" strokeWidth="2" strokeDasharray="3 3" />
+        <line x1="30" y1="80" x2="130" y2="80" stroke="#10b981" strokeWidth="4" strokeLinecap="round" />
+        <circle cx="138" cy="76" r="6" fill="#c084fc" />
+        <circle cx="30" cy="80" r="4" fill="#06b6d4" />
+        <circle cx="75" cy="80" r="4" fill="#a855f7" />
+        <circle cx="122" cy="80" r="4" fill="#34d399" />
+        <text x="50" y="65" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="monospace">180° RIGID</text>
+      </svg>
+      <div className="text-[11px] space-y-1">
+        <div className="text-emerald-400 font-bold font-mono text-xs">Optimal Collinearity</div>
+        <div className="text-slate-300">• Spine & hips in neutral line</div>
+        <div className="text-slate-300">• Core braced under tension</div>
+      </div>
+    </div>
+  );
+}
 
 export default function AICoachChat({ setActiveTab = () => {}, onStartWorkout = () => {} }) {
   const { user } = useAuth();
@@ -39,7 +183,7 @@ export default function AICoachChat({ setActiveTab = () => {}, onStartWorkout = 
 Currently, you are at **Level ${user?.level || 3}** with an active **${user?.streak || 3}-day streak**!
 
 How can I assist your physical ascension today?
-- Ask me for a **biomechanical form check** on squats, pushups, or planks
+- Ask me for a **biomechanical form check** on squats, pushups, lunges, or planks
 - Request a **scalable regression** if an exercise feels too difficult
 - Inquire about **muscle soreness, recovery**, or post-workout nutrition
 - Request a **personalized 15-minute custom routine**!`,
@@ -71,6 +215,7 @@ How can I assist your physical ascension today?
     all: [
       'How do I maintain good squat form?',
       'Pushups feel too hard, what is an easier alternative?',
+      'How do I do proper forward lunges?',
       'My muscles are sore today, should I rest or stretch?',
       'Recommend a high-energy 15-minute routine',
       'What should I eat after my workout?'
@@ -78,14 +223,15 @@ How can I assist your physical ascension today?
     form: [
       'How do I maintain good squat form?',
       'Check my pushup elbow angle & cues',
+      'How do I do proper forward lunges?',
       'How to keep a rigid plank line without sagging?',
       'What is the proper cadence for bicep curls?'
     ],
     regressions: [
       'Pushups feel too hard, what is an easier alternative?',
       'Squats hurt my knees, show me a safe regression',
-      'Jumping jacks are too jarring, give me low-impact cardio',
-      'How do I scale up to harder bodyweight movements?'
+      'Lunges feel unstable, give me a beginner version',
+      'Jumping jacks are too jarring, give me low-impact cardio'
     ],
     quests: [
       'Recommend a high-energy 15-minute routine',
@@ -109,7 +255,6 @@ How can I assist your physical ascension today?
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Clean up speech recognition & voice synthesis on unmount
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {
@@ -188,7 +333,6 @@ How can I assist your physical ascension today?
     }
 
     setCurrentlySpeakingId(msgId);
-    // Strip markdown formatting for cleaner audio speech
     const cleanSpeech = text
       .replace(/[*#_`>~]/g, '')
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
@@ -200,7 +344,6 @@ How can I assist your physical ascension today?
       rate: 1.05
     });
 
-    // Reset speaking icon when done (approximate or via event)
     const estimatedDurationMs = (cleanSpeech.split(' ').length / 2.5) * 1000 + 1000;
     setTimeout(() => {
       setCurrentlySpeakingId(prev => (prev === msgId ? null : prev));
@@ -242,7 +385,6 @@ How can I assist your physical ascension today?
 
         setMessages(prev => [...prev, coachMsg]);
 
-        // Auto-speak if hands-free auto-speak mode is enabled
         if (autoSpeakEnabled) {
           handleSpeakMessage(coachMsg.id, res.reply);
         }
@@ -353,7 +495,7 @@ How can I assist your physical ascension today?
       </div>
 
       {/* Chat Thread Area */}
-      <div className="glass-panel rounded-3xl p-6 border border-slate-800 flex flex-col h-[560px] shadow-2xl">
+      <div className="glass-panel rounded-3xl p-6 border border-slate-800 flex flex-col h-[580px] shadow-2xl">
         <div className="flex-1 overflow-y-auto space-y-4 pr-2">
           {messages.map((msg) => {
             const isUser = msg.role === 'user';
@@ -412,6 +554,9 @@ How can I assist your physical ascension today?
                         </span>
                       </div>
 
+                      {/* Visual Biomechanical SVG Kinematic Diagram */}
+                      <BiomechanicalKinematicDiagram exerciseId={msg.exerciseCard.exerciseId} />
+
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
                         <div className="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
                           <span className="text-emerald-400 font-bold uppercase text-[10px] block">Concentric Drive</span>
@@ -430,16 +575,25 @@ How can I assist your physical ascension today?
                         </div>
                       )}
 
-                      {/* Direct 1-Click Launch CV Pose Tracker Button */}
-                      {msg.exerciseCard.cvTrackerReady && (
+                      {/* Action Button Row */}
+                      <div className="pt-1 flex flex-col sm:flex-row gap-2">
+                        {msg.exerciseCard.cvTrackerReady && (
+                          <button
+                            onClick={() => launchExerciseTracker(msg.exerciseCard.exerciseId, msg.exerciseCard.exerciseName, msg.exerciseCard.recommendedReps)}
+                            className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-purple-600/30 transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                          >
+                            <Camera className="w-4 h-4 text-white" />
+                            <span>Launch Live CV Tracker</span>
+                          </button>
+                        )}
                         <button
-                          onClick={() => launchExerciseTracker(msg.exerciseCard.exerciseId, msg.exerciseCard.exerciseName, msg.exerciseCard.recommendedReps)}
-                          className="w-full mt-2 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-purple-600/30 transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                          onClick={() => handleSendMessage(`What is an easier regression for ${msg.exerciseCard.exerciseName}?`)}
+                          className="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold border border-slate-700 transition-all flex items-center justify-center gap-1.5"
                         >
-                          <Camera className="w-4 h-4 text-white" />
-                          <span>Launch Live CV Pose Tracker ({msg.exerciseCard.recommendedReps} Reps)</span>
+                          <RotateCcw className="w-3.5 h-3.5 text-purple-400" />
+                          <span>Show Regression</span>
                         </button>
-                      )}
+                      </div>
                     </div>
                   )}
 
@@ -555,12 +709,19 @@ How can I assist your physical ascension today?
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Listening Status Banner if STT active */}
+        {/* Listening Status Banner with Animated Equalizer Bars */}
         {isListening && (
-          <div className="mb-2 p-2 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-200 text-xs flex items-center justify-between animate-pulse">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-              <span>Listening to your voice... Speak your exercise question</span>
+          <div className="mb-2 p-2.5 rounded-xl bg-purple-600/20 border border-purple-500/40 text-purple-200 text-xs flex items-center justify-between animate-pulse">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+              <div className="flex items-center gap-1 mr-1">
+                <span className="w-1 h-3 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                <span className="w-1 h-5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
+                <span className="w-1 h-4 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
+                <span className="w-1 h-6 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.45s' }} />
+                <span className="w-1 h-3 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0.6s' }} />
+              </div>
+              <span>Listening to voice... Speak your question clearly</span>
             </div>
             <button
               onClick={toggleSpeechRecognition}

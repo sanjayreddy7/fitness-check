@@ -20,8 +20,8 @@ import { soundEngine } from '../services/audioService';
 export default function Login({ setActiveTab }) {
   const { login, demoLogin } = useAuth();
 
-  const [email, setEmail] = useState('alex@adventure.com');
-  const [password, setPassword] = useState('adventure123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState(null);

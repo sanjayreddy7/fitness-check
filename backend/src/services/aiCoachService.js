@@ -180,6 +180,21 @@ function detectExerciseCard(text) {
     };
   }
 
+  if (text.includes('lunge') || text.includes('split squat')) {
+    return {
+      exerciseId: 'lunge',
+      exerciseName: 'Forward Lunges',
+      targetJoint: 'Lead Knee Flexion & Hip Extension',
+      targetAngle: '≤ 95° (Lead Knee Right Angle)',
+      primaryMuscles: ['Quadriceps', 'Hamstrings', 'Gluteus Medius', 'Core Stabilizers'],
+      concentricCue: 'Drive firmly through your lead heel, extending hips to return to upright standing position.',
+      eccentricCue: 'Step forward under control; drop rear knee straight down until 2 inches above ground.',
+      commonFault: 'Lead knee shooting excessively beyond toes or torso collapsing forward.',
+      recommendedReps: 12,
+      cvTrackerReady: true
+    };
+  }
+
   return null;
 }
 
@@ -235,6 +250,24 @@ In our adventure, taking a dedicated rest day gives you **Recovery XP** and keep
 4. **Depth**: Descend until your chest is approximately 2 inches off the deck.
 5. **Full Lockout**: Push the floor away completely at the top, allowing your shoulder blades to spread smoothly.`,
       quickFollowUps: ['Pushups are too hard, what alternative?', 'Diamond pushups tips', 'Check my plank form']
+    };
+  }
+
+  // Lunge Form
+  if (text.includes('lunge') || text.includes('split squat')) {
+    return {
+      category: 'exercise_technique',
+      exerciseCard: detectExerciseCard('lunge'),
+      text: `Here is the biomechanical checklist for **Forward & Reverse Lunges**:
+
+1. **Stride Length**: Step forward sufficiently so both knees bend to approximately **90 degrees** at full depth.
+2. **Torso Alignment**: Keep your spine upright and chest tall—resist the urge to collapse your ribcage over the lead thigh.
+3. **Rear Knee Drop**: Lower your back knee vertically toward the floor until it hovers 2 inches above the surface.
+4. **Drive Phase**: Drive through your lead heel and midfoot to return explosively to full standing lockout.
+5. **Stability Focus**: Fix your gaze straight ahead and brace your core to prevent knee valgus wobble.
+
+💡 *Camera Vision*: Use CV Tracker to track your lead knee flexion angle in real time!`,
+      quickFollowUps: ['Easier lunge regression', 'Squats vs Lunges', 'Launch Camera Lunge Tracker']
     };
   }
 

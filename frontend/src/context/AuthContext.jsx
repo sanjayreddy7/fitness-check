@@ -14,28 +14,23 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function loadInitialUser() {
       const storedToken = localStorage.getItem('fitness_token');
-      const explicitlyLoggedOut = localStorage.getItem('fitness_logged_out') === 'true';
 
       if (storedToken) {
         try {
           const res = await api.getProfile();
           if (res && res.user) {
             setUser(res.user);
+          } else {
+            localStorage.removeItem('fitness_token');
+            setToken(null);
+            setTokenState(null);
           }
         } catch (err) {
           console.warn('Initial session expired, clearing token');
           localStorage.removeItem('fitness_token');
+          setToken(null);
+          setTokenState(null);
         }
-      } else if (!explicitlyLoggedOut) {
-        // Auto-seed with demo user on initial launch for seamless evaluation
-        try {
-          const demoRes = await api.demoLogin();
-          if (demoRes && demoRes.token) {
-            setToken(demoRes.token);
-            setTokenState(demoRes.token);
-            setUser(demoRes.user);
-          }
-        } catch (e) {}
       }
       setIsLoading(false);
     }
@@ -89,6 +84,7 @@ export function AuthProvider({ children }) {
     setToken(null);
     setTokenState(null);
     setUser(null);
+    localStorage.removeItem('fitness_token');
     localStorage.setItem('fitness_logged_out', 'true');
   };
 
