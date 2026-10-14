@@ -10,11 +10,28 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const app = express();
 
-// Middlewares
+// Robust Production CORS Configuration
 app.use(cors({
-  origin: CORS_ORIGIN === '*' ? true : CORS_ORIGIN,
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow non-browser requests or any Vercel/localhost/Render origin
+    if (!origin) return callback(null, true);
+    if (
+      CORS_ORIGIN === '*' ||
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1') ||
+      origin.endsWith('.vercel.app') ||
+      origin.endsWith('.onrender.com') ||
+      origin === CORS_ORIGIN
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+app.options('*', cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 

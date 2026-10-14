@@ -4,15 +4,15 @@
       "id": "user-demo-1",
       "name": "Alex Vance",
       "email": "alex@adventure.com",
-      "passwordHash": "$2a$08$RpZNwJ1RHSd/WIQJGZQTyuV0ob0Ep7VDfB3Lq2/JQnLG.4NY3OvZ6",
+      "passwordHash": "$2a$08$dxz6m.ftvJazvQZzGUAlvuICmpvrE.voF.KPpeWD2dVzrEvCAI6R2",
       "role": "Adventurer",
       "avatar": "Aura Warrior",
       "avatarClass": "warrior",
       "avatarColor": "#8b5cf6",
-      "title": "Aura Apprentice",
-      "level": 3,
-      "xp": 420,
-      "xpToNextLevel": 600,
+      "title": "Iron Vanguard",
+      "level": 4,
+      "xp": 544,
+      "xpToNextLevel": 800,
       "streak": 3,
       "lastActiveDate": "2026-10-14",
       "fitnessGoals": [
@@ -25,13 +25,13 @@
         "dumbbells"
       ],
       "preferredDurationMinutes": 30,
-      "weeklyActivityMinutes": 75,
+      "weeklyActivityMinutes": 95,
       "stats": {
-        "totalWorkouts": 8,
-        "totalMinutes": 145,
-        "totalReps": 210,
-        "totalCalories": 820,
-        "cvVerifiedReps": 45
+        "totalWorkouts": 9,
+        "totalMinutes": 165,
+        "totalReps": 240,
+        "totalCalories": 964,
+        "cvVerifiedReps": 60
       },
       "preferences": {
         "soundEnabled": true,
@@ -39,9 +39,69 @@
         "darkTheme": true
       },
       "createdAt": "2026-10-01T08:00:00.000Z"
+    },
+    {
+      "id": "user-1791993811512",
+      "name": "Elena Rostova",
+      "email": "test_1791993811014@fitness.com",
+      "passwordHash": "$2a$08$.bZA5.0z8.fwT8/6w4ZwxeMpM0Zkyssu6LRjKAooAFVLgi3AFlxKO",
+      "role": "Adventurer",
+      "avatar": "Wind Strider",
+      "avatarClass": "scout",
+      "avatarColor": "#06b6d4",
+      "title": "Novice Adventurer",
+      "level": 1,
+      "xp": 0,
+      "xpToNextLevel": 50,
+      "streak": 1,
+      "lastActiveDate": "2026-10-14",
+      "fitnessGoals": [
+        "strength"
+      ],
+      "fitnessLevel": "beginner",
+      "availableEquipment": [
+        "bodyweight"
+      ],
+      "preferredDurationMinutes": 20,
+      "weeklyActivityMinutes": 0,
+      "stats": {
+        "totalWorkouts": 0,
+        "totalMinutes": 0,
+        "totalReps": 0,
+        "totalCalories": 0,
+        "cvVerifiedReps": 0
+      },
+      "preferences": {
+        "soundEnabled": true,
+        "cameraGuidance": true,
+        "darkTheme": true
+      },
+      "createdAt": "2026-10-14T16:03:31.512Z"
     }
   ],
   "workouts": [
+    {
+      "id": "w-1791993811688",
+      "userId": "user-demo-1",
+      "title": "Highland Testing Trial",
+      "worldId": "world-1",
+      "nodeId": null,
+      "questId": null,
+      "durationMinutes": 20,
+      "caloriesBurned": 144,
+      "xpEarned": 124,
+      "rpe": 6,
+      "difficultyFeedback": "just_right",
+      "completedAt": "2026-10-14T16:03:31.688Z",
+      "exercises": [
+        {
+          "name": "Bodyweight Squats",
+          "sets": 3,
+          "reps": 10,
+          "cvVerified": true
+        }
+      ]
+    },
     {
       "id": "w-hist-1",
       "userId": "user-demo-1",
@@ -506,7 +566,7 @@
       "icon": "Shield",
       "rarity": "Rare",
       "xpBonus": 120,
-      "unlockedAt": null
+      "unlockedAt": "2026-10-14T16:03:31.671Z"
     },
     {
       "id": "ach-5",
@@ -515,7 +575,7 @@
       "icon": "Zap",
       "rarity": "Epic",
       "xpBonus": 150,
-      "unlockedAt": null
+      "unlockedAt": "2026-10-14T16:03:31.676Z"
     },
     {
       "id": "ach-6",
@@ -560,7 +620,7 @@
       "icon": "Clock",
       "rarity": "Epic",
       "xpBonus": 200,
-      "unlockedAt": null
+      "unlockedAt": "2026-10-14T16:03:31.683Z"
     },
     {
       "id": "ach-11",
@@ -581,5 +641,34 @@
       "unlockedAt": null
     }
   ],
-  "chatHistory": []
+  "chatHistory": [
+    {
+      "userId": "user-demo-1",
+      "role": "user",
+      "content": "How do I maintain good squat form?",
+      "timestamp": "2026-10-14T16:03:31.619Z"
+    },
+    {
+      "userId": "user-demo-1",
+      "role": "assistant",
+      "content": "Here is the biomechanical checklist for a flawless **Bodyweight Squat**:\n\n1. **Stance**: Feet shoulder-width apart, toes flared slightly out (10-15 degrees) to allow room for your pelvis.\n2. **First Move**: Initiate by hinging your hips back slightly before bending the knees.\n3. **Depth**: Lower until hip crease is level with knee joint (parallel). Keep your chest proud and eyes forward.\n4. **Knee Alignment**: Keep your knees pushed out in line with your second toe—do not allow them to collapse inward.\n5. **Ascent**: Drive through your entire foot (tripod foot pressure) and squeeze glutes at the top.\n\n💡 *Pro Tip*: Use our **Camera Vision Mode**! It tracks your hip-knee-ankle angles in real time to verify your depth.",
+      "provider": "heuristic_fallback",
+      "category": "exercise_technique",
+      "timestamp": "2026-10-14T16:03:31.622Z"
+    },
+    {
+      "userId": "user-demo-1",
+      "role": "user",
+      "content": "I feel sharp knee pain when bending down",
+      "timestamp": "2026-10-14T16:03:31.648Z"
+    },
+    {
+      "userId": "user-demo-1",
+      "role": "assistant",
+      "content": "⚠️ **Safety First Adventurer!** \n\nIf you are experiencing sharp pain, swelling, dizziness, or joint discomfort, **please stop exercising immediately**. \n\n- **Do NOT push through pain**: Genuine joint or tendon pain is a signal from your nervous system to rest and protect the joint.\n- **R.I.C.E Principle**: Rest, Ice (if acute swelling), Compression, and Elevation.\n- **Non-Medical Disclaimer**: I am an AI fitness coach, not a medical doctor or licensed physical therapist. If pain persists beyond 24-48 hours or radiates, please consult a qualified healthcare professional.\n\nWould you like to switch to a gentle **Parasympathetic Breathing Flow** or take a safe **Active Recovery Rest Day**? Rest days preserve your adventure streak!",
+      "provider": "safety_guardrail",
+      "category": "safety_advisory",
+      "timestamp": "2026-10-14T16:03:31.652Z"
+    }
+  ]
 }
